@@ -1,0 +1,28 @@
+FROM alpine:3.19
+
+RUN apk --no-cache add \
+      bash~=5.2.21 \
+      mailx~=8.1.2 \
+      msmtp~=1.8.25 \
+      munin~=2.0.75 \
+      munin-node~=2.0.75 \
+      perl-cgi-fast~=2.17 \
+      perl-net-cidr~=0.21 \
+      spawn-fcgi~=1.6.5 \
+      supercronic~=0.2.27 \
+      tini~=0.19.0 \
+      ttf-opensans~=0_git20210927 \
+      tzdata~=2023c && \
+      chown -R munin:munin /var/lib/munin /usr/share/webapps/munin/html /etc/munin && \
+      ln -sf /dev/stdout /var/log/munin/munin-limits.log && \
+      ln -sf /dev/stdout /var/log/munin/munin-node.log && \
+      ln -sf /dev/stdout /var/log/munin/munin-update.log
+
+COPY --chmod=755 ./docker-entrypoint.sh /docker-entrypoint.sh
+COPY ./contrib/templates/munstrap/static /etc/munin/static
+COPY  ./contrib/templates/munstrap/templates /etc/munin/templates
+
+USER munin
+
+ENTRYPOINT [ "/sbin/tini", "--", "/docker-entrypoint.sh" ]
+

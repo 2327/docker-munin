@@ -1,0 +1,14 @@
+#!/bin/sh
+
+case $1 in
+   config)
+        cat <<'EOM'
+graph_title Load average
+graph_vlabel load
+load.label load
+EOM
+        exit 0;;
+esac
+
+printf "load.value "
+cut -d' ' -f2  /proc/loadavg
